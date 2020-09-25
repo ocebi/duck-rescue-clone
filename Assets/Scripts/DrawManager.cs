@@ -89,7 +89,7 @@ public class DrawManager : MonoBehaviour
                     if (points[points.Count - 1].z >= finish.transform.position.z)
                     {
                         int pointsBefore = lineRenderer.positionCount;
-                        lineRenderer.Simplify(0.05f);
+                        lineRenderer.Simplify(0.01f);
                         Debug.Log("Line reduced from " + pointsBefore + " to " + lineRenderer.positionCount);
                         PlayerManager.instance.StartGamePhase();
                     }

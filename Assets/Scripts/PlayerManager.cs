@@ -13,9 +13,9 @@ public class PlayerManager : MonoBehaviour
     public float moveSpeed;
     private int moveVectorIndex = 0;
     private Rigidbody rb;
-    //private float velocityToAdd = 0;
     private NavMeshAgent navMeshAgent;
-    //private bool startedMoving = false;
+    private bool isMoving = false;
+
     // Start is called before the first frame update
     private void Awake()
     {
@@ -33,24 +33,33 @@ public class PlayerManager : MonoBehaviour
             if (Input.touchCount > 0)
             {
                 Touch touch = Input.GetTouch(0);
-
+                
                 if (touch.phase == TouchPhase.Stationary)
                 {
                     if(moveVectorIndex < (playerMoveVector.Count - 1))
                     {
                         float distance = Vector3.Distance(playerMoveVector[moveVectorIndex], transform.position);
-                        
-                        
-                        if(distance > 0.5f)
+                        isMoving = true;
+                        GetComponent<Animator>().SetBool("Run", true);
+
+                        if (distance > 0.5f)
                         {
-                            //startedMoving = true;
+                            isMoving = true;
                             Vector3 movement = transform.forward * Time.deltaTime * moveSpeed;
                             navMeshAgent.Move(movement);
                         }
                         else
                         {
                             ++moveVectorIndex;
-                            transform.LookAt(playerMoveVector[moveVectorIndex]);
+                            Vector3 vectorToLook = playerMoveVector[moveVectorIndex];
+                            vectorToLook.y = transform.position.y; //y position of the looked object must be the same with the looker for lookAt function
+                            transform.LookAt(vectorToLook);
+                            if(!isMoving)
+                            {
+                                Vector3 movement = transform.forward * Time.deltaTime * (moveSpeed + 3);
+                                navMeshAgent.Move(movement);
+                            }
+                            isMoving = false;
                         }
                         
                         //print("Iteration: " + moveVectorIndex);
@@ -71,8 +80,8 @@ public class PlayerManager : MonoBehaviour
                 }
                 if(touch.phase == TouchPhase.Ended)
                 {
-                    //canMove = false;
-                    //rb.velocity = Vector3.zero;
+                    isMoving = false;
+                    GetComponent<Animator>().SetBool("Run", false);
                 }
                 /*
                 if (touch.phase == TouchPhase.Moved)
@@ -134,6 +143,7 @@ public class PlayerManager : MonoBehaviour
         DrawManager.instance.lineRenderer.GetPositions(tempVector);
         playerMoveVector = new List<Vector3>(tempVector);
         transform.LookAt(playerMoveVector[moveVectorIndex]);
+        //GetComponent<Animator>().SetBool("run", true);
         //NavMeshPath path = new NavMeshPath();
         //path.
         //GetComponent<NavMeshAgent>().SetPath(tempVector);
