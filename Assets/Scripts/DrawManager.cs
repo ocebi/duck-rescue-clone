@@ -51,8 +51,8 @@ public class DrawManager : MonoBehaviour
                     {
                         activeDrawing = Instantiate(drawingPrefab);
                         lineRenderer = activeDrawing.GetComponent<LineRenderer>();
-                        lineRenderer.startWidth = 0.2f;
-                        lineRenderer.endWidth = 0.2f;
+                        lineRenderer.startWidth = 0.5f;
+                        lineRenderer.endWidth = 0.5f;
                         lineRenderer.numCornerVertices = 5;
                         //lineRenderer.numCapVertices = 5;
                         canDraw = true;

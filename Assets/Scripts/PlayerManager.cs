@@ -54,11 +54,14 @@ public class PlayerManager : MonoBehaviour
                             Vector3 vectorToLook = playerMoveVector[moveVectorIndex];
                             vectorToLook.y = transform.position.y; //y position of the looked object must be the same with the looker for lookAt function
                             transform.LookAt(vectorToLook);
+                            
                             if(!isMoving)
                             {
-                                Vector3 movement = transform.forward * Time.deltaTime * (moveSpeed + 3);
+                                print("here");
+                                Vector3 movement = transform.forward * Time.deltaTime * (moveSpeed + 30);
                                 navMeshAgent.Move(movement);
                             }
+                            
                             isMoving = false;
                         }
                         
