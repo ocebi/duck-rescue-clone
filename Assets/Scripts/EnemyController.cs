@@ -10,12 +10,6 @@ public class EnemyController : MonoBehaviour
         StartCoroutine(Waiter());
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     IEnumerator Waiter()
     {
         while(true)
@@ -30,12 +24,6 @@ public class EnemyController : MonoBehaviour
             yield return new WaitForSeconds(1.5f);
             StartCoroutine(Rotator(1, -160));
             yield return new WaitForSeconds(1.5f);
-            /*
-            StartCoroutine(Rotator(1, 20));
-            yield return new WaitForSeconds(1.5f);
-            StartCoroutine(Rotator(1, 70));
-            yield return new WaitForSeconds(2f);
-            */
         }
     }
 

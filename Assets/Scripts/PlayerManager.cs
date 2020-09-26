@@ -7,28 +7,28 @@ public class PlayerManager : MonoBehaviour
 {
     [HideInInspector]
     public static PlayerManager instance = null;
-
-    private List<Vector3> playerMoveVector = new List<Vector3>();
+    [HideInInspector]
+    public List<GameObject> followerList;
     [HideInInspector]
     public bool gamePhase = false;
     public float moveSpeed;
-    private int moveVectorIndex = 0;
-    private Rigidbody rb;
-    private NavMeshAgent navMeshAgent;
-    private float touchTime;
-    //private bool isMoving = false;
-
     public GameObject followerPrefab;
 
-    public List<GameObject> followerList;
+    private int moveVectorIndex = 0;
+    private NavMeshAgent navMeshAgent;
+    private float touchTime;
+    private List<Vector3> playerMoveVector;
+    
+
+    
 
     #region Unity Methods
     private void Awake()
     {
         instance = GetComponent<PlayerManager>();
-        rb = GetComponent<Rigidbody>();
         navMeshAgent = GetComponent<NavMeshAgent>();
         followerList = new List<GameObject>();
+        playerMoveVector = new List<Vector3>();
     }
 
     // Update is called once per frame
@@ -36,16 +36,9 @@ public class PlayerManager : MonoBehaviour
     {
         if (gamePhase)
         {
-            //print("GamePhase true");
             if (Input.touchCount > 0)
             {
                 Touch touch = Input.GetTouch(0);
-                /*
-                if(touch.phase == TouchPhase.Began)
-                {
-
-                }
-                */
                 if (touch.phase == TouchPhase.Began)
                 {
                     touchTime = Time.time;
@@ -53,11 +46,9 @@ public class PlayerManager : MonoBehaviour
 
                 if (touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Stationary || touch.phase == TouchPhase.Moved)
                 {
-                    //print("Velocity: " + navMeshAgent.velocity);
                     if(moveVectorIndex < playerMoveVector.Count)
                     {
                         float distance = Vector3.Distance(playerMoveVector[moveVectorIndex], transform.position);
-                        //isMoving = true;
                         string animationString;
                         if(Time.time - touchTime >= 2f)
                         {
@@ -86,11 +77,9 @@ public class PlayerManager : MonoBehaviour
                             go.transform.LookAt(vectorToLook);
                             ++i;
                         }
-                        //print("Distance: " + distance);
                         if (distance > 0.7f) //haven't reached next point
                         {
-                            //isMoving = true;
-                            Vector3 movement; // = transform.forward * Time.deltaTime * moveSpeed;
+                            Vector3 movement;
                             if(animationString.Equals("Run"))
                             {
                                 movement = transform.forward * Time.deltaTime * (moveSpeed + 3);
@@ -126,7 +115,6 @@ public class PlayerManager : MonoBehaviour
                         }
                         else
                         {
-                            //print("Close to the point.");
                             ++moveVectorIndex;
                             Vector3 vectorToLook = playerMoveVector[moveVectorIndex];
                             vectorToLook.y = transform.position.y; //y position of the looked object must be the same with the looker for lookAt function
@@ -136,36 +124,13 @@ public class PlayerManager : MonoBehaviour
                                 Vector3 movement = transform.forward * Time.deltaTime * (moveSpeed);
                                 navMeshAgent.Move(movement);
                             }
-                            /*
-                            if(!isMoving)
-                            {
-                                print("here");
-                                Vector3 movement = transform.forward * Time.deltaTime * (moveSpeed * 10);
-                                navMeshAgent.Move(movement);
-                            }
-                            */
-                            //isMoving = false;
                         }
                         
-                        //print("Iteration: " + moveVectorIndex);
-                        //var speed = 10f;
-                        //transform.LookAt(playerMoveVector[moveVectorIndex]);
-                        //canMove = true;
-                        /*
-                        transform.position = Vector3.MoveTowards(transform.position, playerMoveVector[moveVectorIndex], Time.deltaTime * speed);
-
-                        if (transform.position == playerMoveVector[moveVectorIndex])
-                        {
-                            //canMove = false;
-                            ++moveVectorIndex;
-                        }
-                        */
                     }
                     
                 }
                 if(touch.phase == TouchPhase.Ended)
                 {
-                    //isMoving = false;
                     GetComponent<Animator>().SetBool("Run", false);
                     GetComponent<Animator>().SetBool("Walk", false);
 
@@ -176,15 +141,6 @@ public class PlayerManager : MonoBehaviour
                     }
                     
                 }
-                /*
-                if (touch.phase == TouchPhase.Moved)
-                {
-                    if (moveVectorIndex < playerMoveVector.Count)
-                    {
-                        transform.position = playerMoveVector[moveVectorIndex++];
-                    }
-                }
-                */
             }
         }
     }
@@ -198,19 +154,12 @@ public class PlayerManager : MonoBehaviour
         playerMoveVector = new List<Vector3>(tempVector);
         transform.LookAt(playerMoveVector[moveVectorIndex]);
         gamePhase = true;
-        /*
-        for(int i=0;i<playerMoveVector.Count-2;++i)
-        {
-            Debug.DrawLine(playerMoveVector[i], playerMoveVector[i + 1]);
-        }
-        */
     }
 
     public void AddFollower()
     {
         Vector3 behindPosition = transform.position - transform.forward * (followerList.Count + 1);
         GameObject go = Instantiate(followerPrefab, behindPosition, transform.rotation);
-        //go.transform.position = transform.position;
         followerList.Add(go);
     }
     #endregion

@@ -10,16 +10,12 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI infoText;
     private bool tapToRestart = false;
 
+    #region Unity Methods
     // Start is called before the first frame update
     private void Awake()
     {
         instance = GetComponent<GameManager>();
         Time.timeScale = 1;
-    }
-
-    private void Start()
-    {
-        //AdjustAspectRatio();
     }
 
     // Update is called once per frame
@@ -39,7 +35,9 @@ public class GameManager : MonoBehaviour
         }
 
     }
+    #endregion
 
+    #region Public Methods
     public void OnLevelFinished()
     {
         infoText.text = "Level finished with " + PlayerManager.instance.followerList.Count + " chicks." +
@@ -62,16 +60,5 @@ public class GameManager : MonoBehaviour
     {
         infoText.gameObject.SetActive(toggle);
     }
-
-    private void AdjustAspectRatio()
-    {
-        Vector2 deviceScreenResolution = new Vector2(Screen.width, Screen.height);
-
-        float screenHeight = Screen.height;
-        float screenWidth = Screen.width;
-
-        float DEVICE_SCREEN_ASPECT = screenWidth / screenHeight;
-
-        Camera.main.aspect = DEVICE_SCREEN_ASPECT;
-    }
+    #endregion
 }

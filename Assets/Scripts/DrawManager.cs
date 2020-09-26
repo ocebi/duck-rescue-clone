@@ -9,7 +9,7 @@ public class DrawManager : MonoBehaviour
     [HideInInspector]
     public List<Vector3> points = new List<Vector3>();
     [HideInInspector]
-    public static DrawManager instance = null; //simple singleton
+    public static DrawManager instance = null; //singleton
 
     public GameObject drawingPrefab;
     public GameObject activeDrawing;
@@ -19,12 +19,9 @@ public class DrawManager : MonoBehaviour
     public Material obstacleMaterial_Transparent;
     public Material obstacleMaterial_Opaque;
 
-    //public LayerMask obstacleMask;
-
     private void Awake()
     {
         instance = GetComponent<DrawManager>();
-        Physics.defaultSolverVelocityIterations = 10; //not sure if it works
     }
 
     void Update()
@@ -99,12 +96,10 @@ public class DrawManager : MonoBehaviour
                     if (distanceToFinish < 3.5f)
                     {
                         GameManager.instance.ToggleInfoText(false);
-                        int pointsBefore = lineRenderer.positionCount;
-                        lineRenderer.Simplify(0.1f);
-                        Debug.Log("Line reduced from " + pointsBefore + " to " + lineRenderer.positionCount);
+                        lineRenderer.Simplify(0.1f); //reduces the number of points in the path
                         PlayerManager.instance.StartGamePhase();
 
-                        for (int i = 0; i < obstaclesParent.transform.childCount; ++i) //change layer mask and materials of the objects
+                        for (int i = 0; i < obstaclesParent.transform.childCount; ++i) //change layer mask and materials of the obstacles
                         {
                             obstaclesParent.transform.GetChild(i).gameObject.layer = LayerMask.NameToLayer("Obstacles");
                             obstaclesParent.transform.GetChild(i).GetComponent<MeshRenderer>().material = obstacleMaterial_Opaque;
@@ -117,7 +112,6 @@ public class DrawManager : MonoBehaviour
                         {
                             Destroy(activeDrawing);
                         }
-                        //GameManager.instance.ToggleInfoText(true);
                     }
                 }
             }
