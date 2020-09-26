@@ -67,7 +67,7 @@ public class FieldOfView : MonoBehaviour
 
         if(visibleTargets.Count > 0)
         {
-            //print("Target detected.");
+            GameManager.instance.OnLevelFailed();
         }
     }
 

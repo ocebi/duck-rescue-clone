@@ -15,10 +15,16 @@ public class DrawManager : MonoBehaviour
     public GameObject activeDrawing;
     private bool canDraw = false;
     public GameObject finish;
+    public GameObject obstaclesParent;
+    public Material obstacleMaterial_Transparent;
+    public Material obstacleMaterial_Opaque;
+
+    //public LayerMask obstacleMask;
 
     private void Awake()
     {
         instance = GetComponent<DrawManager>();
+        Physics.defaultSolverVelocityIterations = 10; //not sure if it works
     }
 
     void Update()
@@ -38,6 +44,8 @@ public class DrawManager : MonoBehaviour
 
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hitInfo;
+                //int mask = ~(1 << 8);
+                //if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity, mask))
                 if (Physics.Raycast(ray, out hitInfo))
                 {
                     var pointToAdd = hitInfo.point;
@@ -54,11 +62,11 @@ public class DrawManager : MonoBehaviour
                         lineRenderer.startWidth = 0.5f;
                         lineRenderer.endWidth = 0.5f;
                         lineRenderer.numCornerVertices = 5;
-                        //lineRenderer.numCapVertices = 5;
+                        lineRenderer.numCapVertices = 5;
                         canDraw = true;
                     }
                 }
-
+                //GameManager.instance.ToggleInfoText(false);
             }
 
             if (touch.phase == TouchPhase.Moved)
@@ -86,16 +94,30 @@ public class DrawManager : MonoBehaviour
                 canDraw = false;
                 if(points.Count > 0)
                 {
-                    if (points[points.Count - 1].z >= finish.transform.position.z)
+                    float distanceToFinish = Vector3.Distance(points[points.Count - 1], finish.transform.position);
+                    print(distanceToFinish);
+                    if (distanceToFinish < 3.5f)
                     {
+                        GameManager.instance.ToggleInfoText(false);
                         int pointsBefore = lineRenderer.positionCount;
-                        lineRenderer.Simplify(0.01f);
+                        lineRenderer.Simplify(0.75f);
                         Debug.Log("Line reduced from " + pointsBefore + " to " + lineRenderer.positionCount);
                         PlayerManager.instance.StartGamePhase();
+
+                        for (int i = 0; i < obstaclesParent.transform.childCount; ++i) //change layer mask and materials of the objects
+                        {
+                            obstaclesParent.transform.GetChild(i).gameObject.layer = LayerMask.NameToLayer("Obstacles");
+                            obstaclesParent.transform.GetChild(i).GetComponent<MeshRenderer>().material = obstacleMaterial_Opaque;
+                        }
+
                     }
-                    else if (activeDrawing != null)
+                    else
                     {
-                        Destroy(activeDrawing);
+                        if (activeDrawing != null)
+                        {
+                            Destroy(activeDrawing);
+                        }
+                        //GameManager.instance.ToggleInfoText(true);
                     }
                 }
             }
