@@ -17,6 +17,11 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1;
     }
 
+    private void Start()
+    {
+        //AdjustAspectRatio();
+    }
+
     // Update is called once per frame
     private void Update()
     {
@@ -56,5 +61,17 @@ public class GameManager : MonoBehaviour
     public void ToggleInfoText(bool toggle)
     {
         infoText.gameObject.SetActive(toggle);
+    }
+
+    private void AdjustAspectRatio()
+    {
+        Vector2 deviceScreenResolution = new Vector2(Screen.width, Screen.height);
+
+        float screenHeight = Screen.height;
+        float screenWidth = Screen.width;
+
+        float DEVICE_SCREEN_ASPECT = screenWidth / screenHeight;
+
+        Camera.main.aspect = DEVICE_SCREEN_ASPECT;
     }
 }

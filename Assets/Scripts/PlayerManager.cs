@@ -15,6 +15,7 @@ public class PlayerManager : MonoBehaviour
     private int moveVectorIndex = 0;
     private Rigidbody rb;
     private NavMeshAgent navMeshAgent;
+    private float touchTime;
     //private bool isMoving = false;
 
     public GameObject followerPrefab;
@@ -45,18 +46,33 @@ public class PlayerManager : MonoBehaviour
 
                 }
                 */
-                if (touch.phase == TouchPhase.Stationary)
+                if (touch.phase == TouchPhase.Began)
+                {
+                    touchTime = Time.time;
+                }
+
+                if (touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Stationary || touch.phase == TouchPhase.Moved)
                 {
                     //print("Velocity: " + navMeshAgent.velocity);
                     if(moveVectorIndex < playerMoveVector.Count)
                     {
                         float distance = Vector3.Distance(playerMoveVector[moveVectorIndex], transform.position);
                         //isMoving = true;
-                        GetComponent<Animator>().SetBool("Run", true);
+                        string animationString;
+                        if(Time.time - touchTime >= 2f)
+                        {
+                            animationString = "Run";
+                        }
+                        else
+                        {
+                            animationString = "Walk";
+                        }
+
+                        GetComponent<Animator>().SetBool(animationString, true);
                         int i = 0;
                         foreach(GameObject go in followerList)
                         {
-                            go.GetComponent<Animator>().SetBool("Run", true);
+                            go.GetComponent<Animator>().SetBool(animationString, true);
                             Vector3 vectorToLook;
                             if (i == 0)
                             {
@@ -70,11 +86,19 @@ public class PlayerManager : MonoBehaviour
                             go.transform.LookAt(vectorToLook);
                             ++i;
                         }
-                        print("Distance: " + distance);
-                        if (distance > 0.5f) //haven't reached next point
+                        //print("Distance: " + distance);
+                        if (distance > 0.7f) //haven't reached next point
                         {
                             //isMoving = true;
-                            Vector3 movement = transform.forward * Time.deltaTime * moveSpeed;
+                            Vector3 movement; // = transform.forward * Time.deltaTime * moveSpeed;
+                            if(animationString.Equals("Run"))
+                            {
+                                movement = transform.forward * Time.deltaTime * (moveSpeed + 3);
+                            }
+                            else
+                            {
+                                movement = transform.forward * Time.deltaTime * moveSpeed;
+                            }
                             navMeshAgent.Move(movement);
                             i = 0;
                             foreach (GameObject go in followerList)
@@ -85,7 +109,7 @@ public class PlayerManager : MonoBehaviour
                                     distanceToPlayer = Vector3.Distance(go.transform.position, transform.position);
                                     if (distanceToPlayer > (1f))
                                     {
-                                        go.transform.position += go.transform.forward * Time.deltaTime * moveSpeed;
+                                        go.transform.position += go.transform.forward * Time.deltaTime * (moveSpeed + 3);
                                     }
                                 }
                                 else //follower should follow the previous follower
@@ -93,7 +117,7 @@ public class PlayerManager : MonoBehaviour
                                     distanceToPlayer = Vector3.Distance(go.transform.position, followerList[i-1].transform.position);
                                     if (distanceToPlayer > (0.75f))
                                     {
-                                        go.transform.position += go.transform.forward * Time.deltaTime * moveSpeed;
+                                        go.transform.position += go.transform.forward * Time.deltaTime * (moveSpeed + 3);
                                     }
                                 }
                                 ++i;
@@ -102,7 +126,7 @@ public class PlayerManager : MonoBehaviour
                         }
                         else
                         {
-                            print("Close to the point.");
+                            //print("Close to the point.");
                             ++moveVectorIndex;
                             Vector3 vectorToLook = playerMoveVector[moveVectorIndex];
                             vectorToLook.y = transform.position.y; //y position of the looked object must be the same with the looker for lookAt function
@@ -143,10 +167,12 @@ public class PlayerManager : MonoBehaviour
                 {
                     //isMoving = false;
                     GetComponent<Animator>().SetBool("Run", false);
-                    
+                    GetComponent<Animator>().SetBool("Walk", false);
+
                     foreach (GameObject go in followerList)
                     {
                         go.GetComponent<Animator>().SetBool("Run", false);
+                        go.GetComponent<Animator>().SetBool("Walk", false);
                     }
                     
                 }

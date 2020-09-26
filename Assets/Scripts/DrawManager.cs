@@ -79,7 +79,7 @@ public class DrawManager : MonoBehaviour
                     {
                         //print("point: " + hitInfo.point);
                         var pointToAdd = hitInfo.point;
-                        pointToAdd.y = 0;
+                        pointToAdd.y = -0.1f;
                         
                         points.Add(pointToAdd);
                         lineRenderer.positionCount = points.Count;
@@ -100,7 +100,7 @@ public class DrawManager : MonoBehaviour
                     {
                         GameManager.instance.ToggleInfoText(false);
                         int pointsBefore = lineRenderer.positionCount;
-                        lineRenderer.Simplify(0.75f);
+                        lineRenderer.Simplify(0.1f);
                         Debug.Log("Line reduced from " + pointsBefore + " to " + lineRenderer.positionCount);
                         PlayerManager.instance.StartGamePhase();
 

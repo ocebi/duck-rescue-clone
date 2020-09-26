@@ -28,10 +28,14 @@ public class EnemyController : MonoBehaviour
             yield return new WaitForSeconds(2f);
             StartCoroutine(Rotator(0.5f, -20));
             yield return new WaitForSeconds(1.5f);
-            StartCoroutine(Rotator(1, 110));
+            StartCoroutine(Rotator(1, -160));
+            yield return new WaitForSeconds(1.5f);
+            /*
+            StartCoroutine(Rotator(1, 20));
+            yield return new WaitForSeconds(1.5f);
+            StartCoroutine(Rotator(1, 70));
             yield return new WaitForSeconds(2f);
-            StartCoroutine(Rotator(1, -270));
-            yield return new WaitForSeconds(2f);
+            */
         }
     }
 
